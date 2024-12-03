@@ -15,12 +15,12 @@ const PotentialCandidates = () => {
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <h1>Potential Candidates</h1>
       {potentialCandidates.length > 0 ? (
         <ul>
           {potentialCandidates.map((candidate) => (
-            <li key={candidate.username}>
+            <li key={candidate.username} className="candidate-card">
               <img src={candidate.avatar_url} alt={candidate.username} />
               <h2>{candidate.name}</h2>
               <p>Username: {candidate.username}</p>

@@ -18,8 +18,8 @@ const CandidateSearch = () => {
     fetchCandidate();
   }, []);
 
-   // useEffect hook to save potential candidates to local storage when they change
-   useEffect(() => {
+  // useEffect hook to save potential candidates to local storage when they change
+  useEffect(() => {
     localStorage.setItem('potentialCandidates', JSON.stringify(potentialCandidates));
   }, [potentialCandidates]);
 
@@ -45,24 +45,24 @@ const CandidateSearch = () => {
   const saveCandidate = () => {
     if (candidate) {
       setPotentialCandidates([...potentialCandidates, candidate]);
-      fetchCandidate(); 
+      fetchCandidate(); // Fetch the next candidate
     }
   };
 
-  // Function to skip current candidate and fetch the next one
+  // Function to skip the current candidate and fetch the next candidate
   const skipCandidate = () => {
-    fetchCandidate();
+    fetchCandidate(); // Fetch the next candidate
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Candidate Search</h1>
       {loading ? (
         <p>Loading candidate information...</p>
       ) : error ? (
         <p>{error}</p>
       ) : candidate ? (
-        <div>
+        <div className="candidate-card">
           <img src={candidate.avatar_url} alt={candidate.username} />
           <h2>{candidate.name}</h2>
           <p>Username: {candidate.username}</p>
@@ -70,8 +70,8 @@ const CandidateSearch = () => {
           <p>Email: {candidate.email}</p>
           <p>Company: {candidate.company}</p>
           <a href={candidate.html_url}>GitHub Profile</a>
-          <button onClick={saveCandidate}>+</button>
-          <button onClick={skipCandidate}>-</button>
+          <button className="save" onClick={saveCandidate}>+</button>
+          <button className="skip" onClick={skipCandidate}>-</button>
         </div>
       ) : (
         <p>No more candidates available</p>
