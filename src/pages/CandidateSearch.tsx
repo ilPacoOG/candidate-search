@@ -1,54 +1,50 @@
 import { useState, useEffect } from 'react';
-import { searchGithub, searchGithubUser } from '../api/API';
+import { searchGithubUser } from '../api/API';
 import Candidate from '../interfaces/Candidate.interface';
 
 // CandidateSearch component
 const CandidateSearch = () => {
-  // State to store the search input
-  const [search, setSearch] = useState<string>('');
-  // State to store the list of candidates
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  // State to store the current candidate
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  // State to store the list of potential candidates
+  const [potentialCandidates, setPotentialCandidates] = useState<Candidate[]>([]);
 
-  // useEffect hook to search GitHub when the search input changes
+  // useEffect hook to fetch a candidate when the page loads
   useEffect(() => {
-    if (search.length > 0) {
-      searchGithub(search).then((data) => {
-        setCandidates(data);
-      });
-    }
-  }, [search]);
+    fetchCandidate();
+  }, []);
 
-  // Handle form submission to search for a GitHub user
-  const handleSearch = (event: React.FormEvent) => {
-    event.preventDefault();
-    searchGithubUser(search).then((data) => {
-      setCandidates(data);
-    });
+  // Function to fetch a candidate from the API
+  const fetchCandidate = async () => {
+    const data = await searchGithubUser('some-username'); // Replace 'some-username' with actual logic to get a username
+    setCandidate(data);
+  };
+
+  // Function to save the current candidate to the list of potential candidates
+  const saveCandidate = () => {
+    if (candidate) {
+      setPotentialCandidates([...potentialCandidates, candidate]);
+      fetchCandidate(); // Fetch the next candidate
+    }
   };
 
   return (
     <div>
       <h1>Candidate Search</h1>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Search for a candidate"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button type="submit">Search</button>
-      </form>
-      <ul>
-        {candidates.map((candidate) => (
-          <li key={candidate.username}>
-            <img src={candidate.avatar} alt={candidate.username} />
-            <a href={candidate.html_url}>{candidate.name}</a>
-            <p>{candidate.location}</p>
-            <p>{candidate.email}</p>
-            <p>{candidate.company}</p>
-          </li>
-        ))}
-      </ul>
+      {candidate ? (
+        <div>
+          <img src={candidate.avatar_url} alt={candidate.username} />
+          <h2>{candidate.name}</h2>
+          <p>Username: {candidate.username}</p>
+          <p>Location: {candidate.location}</p>
+          <p>Email: {candidate.email}</p>
+          <p>Company: {candidate.company}</p>
+          <a href={candidate.html_url}>GitHub Profile</a>
+          <button onClick={saveCandidate}>+</button>
+        </div>
+      ) : (
+        <p>Loading candidate information...</p>
+      )}
     </div>
   );
 };
