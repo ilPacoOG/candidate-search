@@ -18,6 +18,11 @@ const CandidateSearch = () => {
     fetchCandidate();
   }, []);
 
+   // useEffect hook to save potential candidates to local storage when they change
+   useEffect(() => {
+    localStorage.setItem('potentialCandidates', JSON.stringify(potentialCandidates));
+  }, [potentialCandidates]);
+
   // Function to fetch a candidate from the API
   const fetchCandidate = async () => {
     setLoading(true);
