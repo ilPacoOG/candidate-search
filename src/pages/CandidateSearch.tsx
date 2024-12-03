@@ -8,6 +8,10 @@ const CandidateSearch = () => {
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   // State to store the list of potential candidates
   const [potentialCandidates, setPotentialCandidates] = useState<Candidate[]>([]);
+  // State to store the loading status
+  const [loading, setLoading] = useState<boolean>(true);
+  // State to store the error message
+  const [error, setError] = useState<string | null>(null);
 
   // useEffect hook to fetch a candidate when the page loads
   useEffect(() => {
@@ -16,22 +20,43 @@ const CandidateSearch = () => {
 
   // Function to fetch a candidate from the API
   const fetchCandidate = async () => {
-    const data = await searchGithubUser('some-username'); // Replace 'some-username' with actual logic to get a username
-    setCandidate(data);
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchGithubUser('some-username'); // Replace 'some-username' with actual logic to get a username
+      if (data) {
+        setCandidate(data);
+      } else {
+        setError('No more candidates available');
+      }
+    } catch (err) {
+      setError('Failed to fetch candidate');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Function to save the current candidate to the list of potential candidates
   const saveCandidate = () => {
     if (candidate) {
       setPotentialCandidates([...potentialCandidates, candidate]);
-      fetchCandidate(); // Fetch the next candidate
+      fetchCandidate(); 
     }
+  };
+
+  // Function to skip current candidate and fetch the next one
+  const skipCandidate = () => {
+    fetchCandidate();
   };
 
   return (
     <div>
       <h1>Candidate Search</h1>
-      {candidate ? (
+      {loading ? (
+        <p>Loading candidate information...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : candidate ? (
         <div>
           <img src={candidate.avatar_url} alt={candidate.username} />
           <h2>{candidate.name}</h2>
@@ -41,9 +66,10 @@ const CandidateSearch = () => {
           <p>Company: {candidate.company}</p>
           <a href={candidate.html_url}>GitHub Profile</a>
           <button onClick={saveCandidate}>+</button>
+          <button onClick={skipCandidate}>-</button>
         </div>
       ) : (
-        <p>Loading candidate information...</p>
+        <p>No more candidates available</p>
       )}
     </div>
   );
