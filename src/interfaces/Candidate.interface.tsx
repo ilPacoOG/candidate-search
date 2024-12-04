@@ -2,7 +2,7 @@
 export default interface Candidate {
     // needs name, username, location, avatar, email, html_url, and company
     name: string;
-    username: string;
+    login: string;
     location: string;
     avatar_url: string;
     email: string;
