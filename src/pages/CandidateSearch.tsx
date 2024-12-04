@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { searchGithubUser } from '../api/API';
+import { searchGithub, searchGithubUser } from '../api/API';
 import Candidate from '../interfaces/Candidate.interface';
+
 
 // CandidateSearch component
 const CandidateSearch = () => {
+  // const navigate = useNavigate();
   // State to store the current candidate
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   // State to store the list of potential candidates
@@ -28,9 +30,10 @@ const CandidateSearch = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await searchGithubUser('some-username'); // Replace 'some-username' with actual logic to get a username
-      if (data) {
-        setCandidate(data);
+      const data = await searchGithub();
+      if (data.length > 0) {
+        const candidateData = await searchGithubUser(data[0].login);
+        setCandidate(candidateData);
       } else {
         setError('No more candidates available');
       }
@@ -63,15 +66,17 @@ const CandidateSearch = () => {
         <p>{error}</p>
       ) : candidate ? (
         <div className="candidate-card">
-          <img src={candidate.avatar_url} alt={candidate.username} />
+          <img src={candidate.avatar_url} alt={candidate.login} />
           <h2>{candidate.name}</h2>
-          <p>Username: {candidate.username}</p>
+          <p>Username: {candidate.login}</p>
           <p>Location: {candidate.location}</p>
           <p>Email: {candidate.email}</p>
           <p>Company: {candidate.company}</p>
           <a href={candidate.html_url}>GitHub Profile</a>
-          <button className="save" onClick={saveCandidate}>+</button>
-          <button className="skip" onClick={skipCandidate}>-</button>
+          <div className="button-container">
+            <button className="save" onClick={saveCandidate}>+</button>
+            <button className="skip" onClick={skipCandidate}>-</button>
+          </div>
         </div>
       ) : (
         <p>No more candidates available</p>

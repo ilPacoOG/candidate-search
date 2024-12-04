@@ -14,23 +14,44 @@ const PotentialCandidates = () => {
     }
   }, []);
 
+   // Function to remove a candidate from the list
+   const removeCandidate = (username: string) => {
+    const updatedCandidates = potentialCandidates.filter(candidate => candidate.login !== username);
+    setPotentialCandidates(updatedCandidates);
+    localStorage.setItem('potentialCandidates', JSON.stringify(updatedCandidates));
+  };
+
   return (
     <div className="container">
       <h1>Potential Candidates</h1>
       {potentialCandidates.length > 0 ? (
-        <ul>
-          {potentialCandidates.map((candidate) => (
-            <li key={candidate.username} className="candidate-card">
-              <img src={candidate.avatar_url} alt={candidate.username} />
-              <h2>{candidate.name}</h2>
-              <p>Username: {candidate.username}</p>
-              <p>Location: {candidate.location}</p>
-              <p>Email: {candidate.email}</p>
-              <p>Company: {candidate.company}</p>
-              <a href={candidate.html_url}>GitHub Profile</a>
-            </li>
-          ))}
-        </ul>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Avatar</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Location</th>
+              <th>Email</th>
+              <th>Company</th>
+              <th>Profile</th>
+            </tr>
+          </thead>
+          <tbody>
+            {potentialCandidates.map((candidate) => (
+              <tr key={candidate.login}>
+                <td><img src={candidate.avatar_url} alt={candidate.login} width="50" /></td>
+                <td>{candidate.name}</td>
+                <td>{candidate.login}</td>
+                <td>{candidate.location}</td>
+                <td>{candidate.email}</td>
+                <td>{candidate.company}</td>
+                <td><a href={candidate.html_url}>GitHub Profile</a></td>
+                <td><button className="reject" onClick={() => removeCandidate(candidate.login)}>Reject</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <p>No potential candidates available</p>
       )}
